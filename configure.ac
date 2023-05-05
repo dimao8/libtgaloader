@@ -17,5 +17,8 @@ LT_LANG([C])
 CFLAGS="-std=gnu11"
 AC_PROG_CC(clang llwm-gcc gcc)
 
+# Check endiannes
+AC_C_BIGENDIAN
+
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

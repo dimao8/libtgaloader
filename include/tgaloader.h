@@ -1,3 +1,7 @@
+///
+/// \file tgaloader.h
+///
+
 #ifndef TGALOADER_H
 #define TGALOADER_H
 
@@ -104,9 +108,53 @@ extern "C"
   typedef struct tga_header_tag tga_header_t;
 #pragma pack(pop)
 
+  ///
+  /// \brief LoadTGAFromArray
+  /// \param [in] data      -- Array with image data
+  /// \param [out] header   -- TGA header with image info
+  /// \param [out] data     -- TGA image data
+  /// \param [in] flip      -- Set to flip image over x
+  /// \return Return result of TGA loading
+  ///
+  /// Load TGA file and store TGA header info and image bites into user defined
+  /// buffer. Image can be flipped by x axis.
+  ///
   tga_error_t EXPORT LoadTGAFromArray (const uint8_t *raw_data, size_t length,
                                        tga_header_t *header, uint8_t **data,
                                        bool flip);
+
+  ///
+  /// \brief LoadTGAFromFile
+  /// \param [in] file_name -- Path and name of the PNG file
+  /// \param [out] header   -- TGA header with image info
+  /// \param [out] data     -- TGA image data
+  /// \param [in] flip      -- Set to flip image over x
+  /// \return Return result of TGA loading
+  ///
+  /// Load TGA file and store TGA header info and image bites into user defined
+  /// buffer. Image can be flipped by x axis.
+  ///
+  tga_error_t EXPORT LoadTGAFromFile (const char *file_name,
+                                      tga_header_t *header, uint8_t **data,
+                                      bool flip);
+
+  ///
+  /// \brief FreeTGA
+  /// \param [in] data -- Pointer to the data, received by LoadTGA.
+  ///
+  /// This function is only way to free data array, received from TGA file by
+  /// LoadTGA function.
+  ///
+  void EXPORT FreeTGA (uint8_t **data);
+
+  ///
+  /// \brief TGALoaderVersion
+  /// \param [out] str -- Buffer for version string
+  /// \param [in] n    -- Length of the buffer
+  ///
+  /// Copy version string into user buffer.
+  ///
+  void EXPORT TGALoaderVersion (char *str, size_t n);
 
 #ifdef __cplusplus
 }
