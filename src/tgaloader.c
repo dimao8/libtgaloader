@@ -60,6 +60,8 @@ LoadTGAFromArray (const uint8_t *raw_data, size_t length, tga_header_t *header,
   memcpy (header, raw_data, sizeof (tga_header_t));
   offset += sizeof (tga_header_t);
 
+  printf ("1\n");
+
   // Rotate header words
   header->color_map_specification.color_map_length
       = letobes (header->color_map_specification.color_map_length);
@@ -75,16 +77,17 @@ LoadTGAFromArray (const uint8_t *raw_data, size_t length, tga_header_t *header,
 
   // Check out header
   if (header->image_type != TGA_IMAGE_GRAYSCALE
-      || header->image_type != TGA_IMAGE_TRUECOLOR)
+      && header->image_type != TGA_IMAGE_TRUECOLOR)
     {
       return TGA_ERROR_NOT_SUPPORTED;
     }
 
-  if ((header->image_type_specification.image_descriptor & TGA_ORIGIN_BITS_Msk)
-          == TGA_ORIGIN_LEFT_BOTTOM
-      || (header->image_type_specification.image_descriptor
-          & TGA_ORIGIN_BITS_Msk)
-             == TGA_ORIGIN_LEFT_TOP)
+  if (((header->image_type_specification.image_descriptor
+        & TGA_ORIGIN_BITS_Msk)
+       == TGA_ORIGIN_RIGHT_BOTTOM)
+      || ((header->image_type_specification.image_descriptor
+           & TGA_ORIGIN_BITS_Msk)
+          == TGA_ORIGIN_RIGHT_TOP))
     return TGA_ERROR_NOT_SUPPORTED;
 
   size_t bpp = (header->image_type_specification.pixel_depth + 7) / 8;
@@ -113,6 +116,8 @@ LoadTGAFromArray (const uint8_t *raw_data, size_t length, tga_header_t *header,
   if (*data == NULL)
     return TGA_ERROR_MALLOC;
 
+  printf ("2\n");
+
   if ((flip
        && (header->image_type_specification.image_descriptor
            & TGA_ORIGIN_BITS_Msk)
@@ -137,14 +142,15 @@ LoadTGAFromArray (const uint8_t *raw_data, size_t length, tga_header_t *header,
         }
     }
 
+  printf ("3\n");
+
   // Rotate data (we expect RED, GREEN, BLUE, ALPHA)
-  switch (bpp)
-    {
+  // switch (bpp)
+  //   {
 
-    case 2:
-      
+  //   case 2:
 
-    }
+  //   }
 
   return TGA_ERROR_OK;
 }
