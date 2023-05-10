@@ -60,8 +60,6 @@ LoadTGAFromArray (const uint8_t *raw_data, size_t length, tga_header_t *header,
   memcpy (header, raw_data, sizeof (tga_header_t));
   offset += sizeof (tga_header_t);
 
-  printf ("1\n");
-
   // Rotate header words
   header->color_map_specification.color_map_length
       = letobes (header->color_map_specification.color_map_length);
@@ -116,41 +114,55 @@ LoadTGAFromArray (const uint8_t *raw_data, size_t length, tga_header_t *header,
   if (*data == NULL)
     return TGA_ERROR_MALLOC;
 
-  printf ("2\n");
+  bool b = (header->image_type_specification.image_descriptor
+            & TGA_ORIGIN_BITS_Msk)
+           == TGA_ORIGIN_LEFT_BOTTOM;
 
-  if ((flip
-       && (header->image_type_specification.image_descriptor
-           & TGA_ORIGIN_BITS_Msk)
-              == TGA_ORIGIN_LEFT_BOTTOM)
-      || (!flip
-          && (header->image_type_specification.image_descriptor
-              & TGA_ORIGIN_BITS_Msk)
-                 == TGA_ORIGIN_LEFT_TOP))
-    {
-      memcpy (*data, raw_data + offset,
-              bpl * header->image_type_specification.height);
-    }
-  else
+  if (flip != b)
     {
       for (size_t n = 0; n < header->image_type_specification.height; n++)
         {
           memcpy (
               *data + bpl * n,
               raw_data + offset
-                  + bpl * (n - header->image_type_specification.height + 1),
+                  + bpl * (header->image_type_specification.height - 1 - n),
               bpl);
         }
     }
+  else
+    {
+      memcpy (*data, raw_data + offset,
+              bpl * header->image_type_specification.height);
+    }
 
-  printf ("3\n");
+  // Rotate data (we expect BLUE, GREEN, RED, ALPHA)
+  uint8_t tmp;
+  switch (bpp)
+    {
 
-  // Rotate data (we expect RED, GREEN, BLUE, ALPHA)
-  // switch (bpp)
-  //   {
+    case 3:
+      for (size_t n = 0; n < header->image_type_specification.width
+                                 * header->image_type_specification.height;
+           n++)
+        {
+          tmp = (*data)[n*3];
+          (*data)[n*3] = (*data)[n*3 + 2];
+          (*data)[n*3 + 2] = tmp;
+        }
+      break;
 
-  //   case 2:
+    case 4:
+      for (size_t n = 0; n < header->image_type_specification.width
+                                 * header->image_type_specification.height;
+           n++)
+        {
+          tmp = (*data)[n*4];
+          (*data)[n*4] = (*data)[n*4 + 2];
+          (*data)[n*4 + 2] = tmp;
+        }
+      break;
 
-  //   }
+    }
 
   return TGA_ERROR_OK;
 }
