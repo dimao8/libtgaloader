@@ -1,4 +1,4 @@
-#include <pngloader.h>
+#include <tgaloader.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
@@ -6,9 +6,9 @@
 int main(int argc, char ** argv)
 {
   uint8_t * data;
-  png_header_t hdr;
+  tga_header_t hdr;
   int n;
-  png_error_t result;
+  tga_error_t result;
   int r;
 
   if (argc == 1)
@@ -23,43 +23,35 @@ int main(int argc, char ** argv)
       else
         {
 					printf("%s\n", argv[n]);
-          result = LoadPNGFromFile(argv[n], &hdr, &data, false);
+          result = LoadTGAFromFile(argv[n], &hdr, &data, false);
         }
     }
 
   switch (result)
     {
 
-    case PNG_ERROR_OK:
+    case TGA_ERROR_OK:
       printf("No error\n");
       break;
 
-    case PNG_ERROR_NO_SUCH_FILE:
+    case TGA_ERROR_NO_SUCH_FILE:
       printf("No such file\n");
       break;
 
-    case PNG_ERROR_NOT_SUPPORTED:
+    case TGA_ERROR_NOT_SUPPORTED:
       printf("Not supported\n");
       break;
 
-    case PNG_ERROR_EMPTY_IMAGE:
+    case TGA_ERROR_EMPTY_IMAGE:
       printf("Empty image\n");
       break;
 
-    case PNG_ERROR_MALLOC:
+    case TGA_ERROR_MALLOC:
       printf("Malloc/Realloc\n");
       break;
 
-    case PNG_ERROR_NOT_PNG:
-      printf("Not a PNG\n");
-      break;
-
-    case PNG_ERROR_UNCOMPRESS:
-      printf("Zlib problem\n");
-      break;
-
-    case PNG_ERROR_WRONG_CHUNK_ORDER:
-      printf("Wrong chunk order\n");
+    case TGA_ERROR_NOT_TGA:
+      printf("Not a TGA\n");
       break;
 
     default:

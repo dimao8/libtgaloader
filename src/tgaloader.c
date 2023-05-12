@@ -54,8 +54,11 @@ LoadTGAFromArray (const uint8_t *raw_data, size_t length, tga_header_t *header,
   uintptr_t offset = 0;
 
   // Get header
-  if (offset + sizeof (tga_header_t) >= length)
-    return TGA_ERROR_NOT_TGA;
+  if (offset + sizeof (tga_header_t) > length)
+    {
+      *data = 0;
+      return TGA_ERROR_NOT_TGA;
+    }
 
   memcpy (header, raw_data, sizeof (tga_header_t));
   offset += sizeof (tga_header_t);
@@ -77,6 +80,7 @@ LoadTGAFromArray (const uint8_t *raw_data, size_t length, tga_header_t *header,
   if (header->image_type != TGA_IMAGE_GRAYSCALE
       && header->image_type != TGA_IMAGE_TRUECOLOR)
     {
+      *data = 0;
       return TGA_ERROR_NOT_SUPPORTED;
     }
 
@@ -86,14 +90,20 @@ LoadTGAFromArray (const uint8_t *raw_data, size_t length, tga_header_t *header,
       || ((header->image_type_specification.image_descriptor
            & TGA_ORIGIN_BITS_Msk)
           == TGA_ORIGIN_RIGHT_TOP))
-    return TGA_ERROR_NOT_SUPPORTED;
+    {
+      *data = 0;
+      return TGA_ERROR_NOT_SUPPORTED;
+    }
 
   size_t bpp = (header->image_type_specification.pixel_depth + 7) / 8;
   size_t bpl = header->image_type_specification.width * bpp;
 
   // Skip ID
-  if (offset + header->id_length >= length)
-    return TGA_ERROR_NOT_TGA;
+  if (offset + header->id_length > length)
+    {
+      *data = 0;
+      return TGA_ERROR_NOT_TGA;
+    }
   else
     offset += header->id_length;
 
@@ -104,9 +114,18 @@ LoadTGAFromArray (const uint8_t *raw_data, size_t length, tga_header_t *header,
           = header->color_map_specification.color_map_length
             * ((header->color_map_specification.color_map_entry_size + 7) / 8);
       if (offset + color_map_size >= length)
-        return TGA_ERROR_NOT_TGA;
+        {
+          *data = 0;
+          return TGA_ERROR_NOT_TGA;
+        }
       else
         offset += color_map_size;
+    }
+
+  if (offset + bpl * header->image_type_specification.height > length)
+    {
+      *data = 0;
+      return TGA_ERROR_EMPTY_IMAGE;
     }
 
   // Get data
@@ -145,9 +164,9 @@ LoadTGAFromArray (const uint8_t *raw_data, size_t length, tga_header_t *header,
                                  * header->image_type_specification.height;
            n++)
         {
-          tmp = (*data)[n*3];
-          (*data)[n*3] = (*data)[n*3 + 2];
-          (*data)[n*3 + 2] = tmp;
+          tmp = (*data)[n * 3];
+          (*data)[n * 3] = (*data)[n * 3 + 2];
+          (*data)[n * 3 + 2] = tmp;
         }
       break;
 
@@ -156,12 +175,11 @@ LoadTGAFromArray (const uint8_t *raw_data, size_t length, tga_header_t *header,
                                  * header->image_type_specification.height;
            n++)
         {
-          tmp = (*data)[n*4];
-          (*data)[n*4] = (*data)[n*4 + 2];
-          (*data)[n*4 + 2] = tmp;
+          tmp = (*data)[n * 4];
+          (*data)[n * 4] = (*data)[n * 4 + 2];
+          (*data)[n * 4 + 2] = tmp;
         }
       break;
-
     }
 
   return TGA_ERROR_OK;
