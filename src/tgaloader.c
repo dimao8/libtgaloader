@@ -230,6 +230,65 @@ FreeTGA (uint8_t **data)
     free (*data);
 }
 
+/* ******************************** SaveTGA ******************************** */
+
+void
+SaveTGA (unsigned int width, unsigned int height, unsigned int bpp,
+         const uint8_t *data, const char *file_name)
+{
+  if (width == 0 || height == 0 || data == 0)
+    return;
+
+  unsigned int image_type;
+  unsigned int alpha_bits;
+  switch (bpp)
+    {
+
+    case 1:
+      image_type = TGA_IMAGE_GRAYSCALE;
+      alpha_bits = 0;
+      break;
+
+    case 2:
+      image_type = TGA_IMAGE_GRAYSCALE;
+      alpha_bits = 8;
+      break;
+
+    case 3:
+      image_type = TGA_IMAGE_TRUECOLOR;
+      alpha_bits = 0;
+      break;
+
+    case 4:
+      image_type = TGA_IMAGE_TRUECOLOR;
+      alpha_bits = 8;
+      break;
+
+    default:
+      return;
+
+    }
+
+  tga_header_t hdr = {
+    0,      // ID length
+    TGA_NO_COLOR_MAP, // Color map type
+    image_type,       // Image type
+    {                 // Color map
+      0,              //   First index
+      0,              //   Length
+      0               //   Entry size
+    },
+    {                 // Image descriptor
+      0,              //   x origin
+      0,              //   y origin
+      width,          //   width
+      height,         //   height
+      bpp*8,          //   Bits per pixel
+      alpha_bits      //   Image descriptor
+    }
+  };
+}
+
 /* **************************** TGALoaderVersion *************************** */
 
 void

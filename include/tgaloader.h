@@ -98,9 +98,9 @@ extern "C"
   {
     uint8_t id_length;      /// Length of the ID field
     uint8_t color_map_type; /// Color map type. Can be one of
-                            /// (Color Map Types)[color_map_type_tag]
+                            /// [Color Map Types](color_map_type_tag)
     uint8_t image_type;     /// Image type. Can be one of
-                            /// (Image Types)[image_type_tag]
+                            /// [Image Types](image_type_tag)
     tga_color_map_t color_map_specification; /// Color map specification
     tga_image_t image_type_specification;    /// Image type specification
   };
@@ -146,6 +146,20 @@ extern "C"
   /// LoadTGA function.
   ///
   void EXPORT FreeTGA (uint8_t **data);
+
+  ///
+  /// \brief Save image data to the TGA file
+  /// \param [in] width -- Width of the image
+  /// \param [in] height -- Height of the image
+  /// \param [in] bpp -- Bytes per pixel. Can be 1, 2, 3 or 4. Otherwise won't
+  /// save
+  /// \param [in] data -- Data to save. Must has at least width*height*bpp
+  /// bytes
+  /// \param [in] file_name -- Name of the TGA file
+  ///
+  void EXPORT SaveTGA (unsigned int width, unsigned int height,
+                       unsigned int bpp, const uint8_t *data,
+                       const char *file_name);
 
   ///
   /// \brief TGALoaderVersion
