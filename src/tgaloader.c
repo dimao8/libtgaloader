@@ -236,8 +236,15 @@ void
 SaveTGA (unsigned int width, unsigned int height, unsigned int bpp,
          const uint8_t *data, const char *file_name)
 {
+
+  printf ("-1\n");
+  fflush (stdout);
+
   if (width == 0 || height == 0 || data == 0)
     return;
+
+  printf ("0\n");
+  fflush (stdout);
 
   unsigned int image_type;
   unsigned int alpha_bits;
@@ -266,27 +273,103 @@ SaveTGA (unsigned int width, unsigned int height, unsigned int bpp,
 
     default:
       return;
-
     }
 
-  tga_header_t hdr = {
-    0,      // ID length
-    TGA_NO_COLOR_MAP, // Color map type
-    image_type,       // Image type
-    {                 // Color map
-      0,              //   First index
-      0,              //   Length
-      0               //   Entry size
-    },
-    {                 // Image descriptor
-      0,              //   x origin
-      0,              //   y origin
-      width,          //   width
-      height,         //   height
-      bpp*8,          //   Bits per pixel
-      alpha_bits      //   Image descriptor
+  printf ("1\n");
+  fflush (stdout);
+
+  tga_header_t hdr = { 0,                // ID length
+                       TGA_NO_COLOR_MAP, // Color map type
+                       image_type,       // Image type
+                       {
+                           // Color map
+                           0, //   First index
+                           0, //   Length
+                           0  //   Entry size
+                       },
+                       {
+                           // Image descriptor
+                           0,         //   x origin
+                           0,         //   y origin
+                           width,     //   width
+                           height,    //   height
+                           bpp * 8,   //   Bits per pixel
+                           alpha_bits //   Image descriptor
+                       } };
+
+  hdr.color_map_specification.color_map_length
+      = letobes (hdr.color_map_specification.color_map_length);
+  hdr.color_map_specification.first_entry_index
+      = letobes (hdr.color_map_specification.first_entry_index);
+
+  hdr.image_type_specification.x_origin
+      = letobes (hdr.image_type_specification.x_origin);
+  hdr.image_type_specification.y_origin
+      = letobes (hdr.image_type_specification.y_origin);
+  hdr.image_type_specification.width
+      = letobes (hdr.image_type_specification.width);
+
+  FILE *of = fopen (file_name, "wb");
+  if (of == NULL)
+    return;
+
+  printf ("2\n");
+  fflush (stdout);
+
+  fwrite (&hdr, sizeof (tga_header_t), 1, of);
+
+  // Rotate data (we expect BLUE, GREEN, RED, ALPHA)
+  uint8_t u8[4];
+  uint16_t u16;
+  uint16_t u32;
+
+  if (bpp == 2 || bpp == 1)
+    {
+      for (size_t y = 0; y < height; y++)
+        {
+          fwrite (data + (height - y - 1) * width, width * bpp, 1, of);
+        }
     }
-  };
+  else
+    {
+      for (size_t y = 0; y < height; y++)
+        {
+          for (size_t x = 0; x < width; x++)
+            {
+              u8[0] = data[(x + (height - y - 1) * width) * bpp + 2];
+              u8[1] = data[(x + (height - y - 1) * width) * bpp + 1];
+              u8[2] = data[(x + (height - y - 1) * width) * bpp];
+              if (bpp == 4)
+                {
+                  u8[3] = data[(x + (height - y - 1) * width) * bpp + 3];
+                }
+              fwrite (u8, bpp, 1, of);
+            }
+        }
+    }
+
+  printf ("3\n");
+  fflush (stdout);
+
+  u16 = letobes (0);
+  fwrite (&u16, sizeof (uint16_t), 1, of); // Developer area size is 0
+
+  fwrite (&u16, sizeof (uint16_t), 1, of); // Extension area size is 0
+
+  u32 = letobel (sizeof (tga_header_t) + hdr.id_length + height * width * bpp
+                 + sizeof (uint16_t));
+
+  fwrite (&u32, sizeof (uint32_t), 1, of); // Extension area offset
+
+  u32 -= sizeof (uint16_t);
+
+  fwrite (&u32, sizeof (uint32_t), 1, of); // Developer area offset
+
+  const char tga_x_str[18] = "TRUEVISION-XFILE.\0";
+
+  fwrite (tga_x_str, 18, 1, of); // Developer area offset
+
+  fclose (of);
 }
 
 /* **************************** TGALoaderVersion *************************** */
