@@ -320,8 +320,7 @@ SaveTGA (unsigned int width, unsigned int height, unsigned int bpp,
 
   // Rotate data (we expect BLUE, GREEN, RED, ALPHA)
   uint8_t u8[4];
-  uint16_t u16;
-  uint16_t u32;
+  uint32_t u32;
 
   if (bpp == 2 || bpp == 1)
     {
@@ -351,19 +350,9 @@ SaveTGA (unsigned int width, unsigned int height, unsigned int bpp,
   printf ("3\n");
   fflush (stdout);
 
-  u16 = letobes (0);
-  fwrite (&u16, sizeof (uint16_t), 1, of); // Developer area size is 0
-
-  fwrite (&u16, sizeof (uint16_t), 1, of); // Extension area size is 0
-
-  u32 = letobel (sizeof (tga_header_t) + hdr.id_length + height * width * bpp
-                 + sizeof (uint16_t));
-
+  u32 = 0;
+  fwrite (&u32, sizeof (uint32_t), 1, of); // Developer area size is 0
   fwrite (&u32, sizeof (uint32_t), 1, of); // Extension area offset
-
-  u32 -= sizeof (uint16_t);
-
-  fwrite (&u32, sizeof (uint32_t), 1, of); // Developer area offset
 
   const char tga_x_str[18] = "TRUEVISION-XFILE.\0";
 

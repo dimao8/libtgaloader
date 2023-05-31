@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([tgaloader], [0.1.0.0], [dimao8@yandex.ru])
+AC_INIT([tgaloader], [0.1.0.1], [dimao8@yandex.ru])
 AC_CONFIG_SRCDIR([src/tgaloader.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIRS([m4])

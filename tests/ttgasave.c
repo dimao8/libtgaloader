@@ -8,7 +8,7 @@ uint8_t pattern[PATTERN_SIZE] = {
   255, 0, 0, 255,
   0, 255, 0, 255,
   0, 0, 255, 255,
-  255, 255, 0, 255};
+  255, 255, 0, 0};
 
 int main(int argc, char ** argv)
 {
