@@ -236,14 +236,11 @@ void
 SaveTGA (unsigned int width, unsigned int height, unsigned int bpp,
          const uint8_t *data, const char *file_name)
 {
-
-  printf ("-1\n");
   fflush (stdout);
 
   if (width == 0 || height == 0 || data == 0)
     return;
 
-  printf ("0\n");
   fflush (stdout);
 
   unsigned int image_type;
@@ -275,7 +272,6 @@ SaveTGA (unsigned int width, unsigned int height, unsigned int bpp,
       return;
     }
 
-  printf ("1\n");
   fflush (stdout);
 
   tga_header_t hdr = { 0,                // ID length
@@ -313,7 +309,6 @@ SaveTGA (unsigned int width, unsigned int height, unsigned int bpp,
   if (of == NULL)
     return;
 
-  printf ("2\n");
   fflush (stdout);
 
   fwrite (&hdr, sizeof (tga_header_t), 1, of);
@@ -347,7 +342,6 @@ SaveTGA (unsigned int width, unsigned int height, unsigned int bpp,
         }
     }
 
-  printf ("3\n");
   fflush (stdout);
 
   u32 = 0;
