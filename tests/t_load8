@@ -1,3 +1,3 @@
 #! /bin/sh
 
-./tests/tpngloader8 ${srcdir}/tests/t_load8.png
+./tests/ttgaloader8 ${srcdir}/tests/t_load8.tga

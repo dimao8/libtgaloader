@@ -34,7 +34,7 @@ int main(int argc, char ** argv)
         }
       else
         {
-          result = LoadTGAFromFile(argv[1], &hdr, &data, true);
+          result = LoadTGAFromFile(argv[1], &hdr, &data, false);
 
           if (result != TGA_ERROR_OK)
             {
