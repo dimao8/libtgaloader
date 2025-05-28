@@ -1,3 +1,0 @@
-#! /bin/sh
-
-./tests/ttgaloader24 ${srcdir}/tests/t_load24.tga

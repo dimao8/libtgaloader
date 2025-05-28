@@ -1,14 +1,4 @@
 build/
-autom4te.cache/
-Makefile.in
-aclocal.m4
-config.h.in
-config.h.in~
-configure
-config.guess
-config.sub
-depcomp
-install-sh
-ltmain.sh
-missing
-test-driver
+.vscode/
+.cache
+compile_commands.json
