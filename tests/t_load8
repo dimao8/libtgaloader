@@ -1,3 +1,0 @@
-#! /bin/sh
-
-./tests/ttgaloader8 ${srcdir}/tests/t_load8.tga

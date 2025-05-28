@@ -1,3 +1,0 @@
-#! /bin/sh
-
-./tests/ttgaloader32 ${srcdir}/tests/t_load32.tga
