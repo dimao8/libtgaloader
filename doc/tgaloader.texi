@@ -1,0 +1,249 @@
+\input texinfo
+@c -*-texinfo-*-
+@c %**start of header
+@setfilename tgaloader.info
+@settitle PNGLoader manual v0.1.
+@c %**end of header
+
+@copying
+This manual is for tgaloader, v0.1.
+
+Copyright @copyright{} 2025 Khruschev Dmitry aka DimaO.
+@end copying
+
+@titlepage
+@title TGALoader
+@subtitle Programmer manual
+@subtitle Revision 1.0
+@author Khruschev Dmitry aka DimaO
+
+@c The following two commands
+@c start the copyright page.
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+
+Published by Khruschev Dmitry aka DimaO
+@end titlepage
+
+@c TOC
+@contents
+
+@ifnottex
+@node Top
+@top Common description
+
+This manual is for TGALoader, v0.1.
+@end ifnottex
+
+@menu
+* Common description::Description of the TGALoader library
+* Library interface::Library interface
+* Types index::Types index
+* Function index::Function index
+@end menu
+
+@node Common description
+@chapter Description of the TGALoader library
+
+TGALoader is a lightweight library for TGA images manipulation. Here are main
+capabilities and restrictions of this library.
+
+@itemize +
+  @item Load TGA uncompressed images.
+  @item Extract TGA header.
+  @item Can flip image vertically for OpenGL usage.
+  @item Can save RGB/RGBA images.
+  @item Licensed under the GNU Lesser General Public License v3 (LGPLv3).
+@end itemize
+
+@itemize @minus
+  @item Can not load palette images.
+  @item Can not load RLE compressed images.
+  @item Can not read X-TARGA additional fields.
+@end itemize
+
+The main purpose of this library is to give simple interface to load textures
+and images for OpenGL-based applications. It is also can be used to save
+OpenGL framebuffer for debug purposes.
+
+@node Library interface
+@chapter Library interface
+
+There are some new types, that defined by this library.
+
+@deftp {Data type} tga_error_t
+This type is an enumerator for all TGALoader error codes. Here is the table of
+values such type variable can have:
+
+@float table,table:tga_error_t
+  @caption{Values of @code{tga_error_t} type}
+  @multitable @columnfractions 0.5 0.5
+    @headitem Name @tab Description
+    @item @code{TGA_ERROR_OK} @tab 0 - No error.
+    @item @code{TGA_ERROR_NO_SUCH_FILE} @tab TGA file is missing or can not
+          be read.
+    @item @code{TGA_ERROR_NOT_TGA} @tab File or stream is not a TGA image.
+    @item @code{TGA_ERROR_MALLOC} @tab Can not allocate memory.
+    @item @code{TGA_ERROR_EMPTY_IMAGE} @tab Image is empty, i.e. there is no
+          image data.
+    @item @code{TGA_ERROR_NOT_SUPPORTED} @tab TGA format not supported by
+          this version.
+  @end multitable
+@end float
+@end deftp
+
+@deftp {Data type} tga_header_t
+This type will contains TGA file header when TGA image will be loaded. Here
+it's fields:
+
+  @float table,table:tga_header_t
+    @caption{@code{tga_header_t} structure fields}
+    @multitable @columnfractions 0.4 0.2 0.4
+      @headitem Name @tab Type @tab Description
+      @item @code{id_length} @tab @code{uint8_t} @tab Length of the TGA image
+            description string.
+      @item @code{color_map_type} @tab @code{uint8_t} @tab Color type. Can be
+            one of @code{tga_color_map_type_t} values.
+      @item @code{image_type} @tab @code{uint8_t} @tab Image map type. Can be
+            one of @code{tga_image_type_t} values.
+      @item @code{color_map_specification} @tab @code{tga_color_map_t} @tab
+            Color map descriptor. Has @code{tga_color_map_t} type.
+      @item @code{image_type_specification} @tab @code{tga_image_t} @tab Image
+            type descriptor. Has @code{tga_image_t} type.
+    @end multitable
+  @end float
+@end deftp
+
+@deftp {Data type} tga_color_map_type_t
+This type describes the color map of the TGA image. It can have one of the
+follows values:
+
+  @float table,table:tga_color_map_type_t
+    @caption{Values of @code{tga_color_map_type_t} type}
+    @multitable @columnfractions 0.5 0.5
+      @headitem Name @tab Description
+      @item @code{TGA_NO_COLOR_MAP} @tab There is no colom map.
+      @item @code{TGA_HAS_COLOR_MAP} @tab Color map is exists.
+    @end multitable
+  @end float
+@end deftp
+
+@deftp {Data type} tga_image_type_t
+This type describes the image type of the TGA image, and can hold one of
+values below:
+
+  @float table,table:tga_image_type_t
+    @caption{Values of @code{tga_image_type_t} type}
+    @multitable @columnfractions 0.5 0.5
+      @headitem Name @tab Description
+      @item @code{TGA_NO_IMAGE} @tab TGA has no image (why this value can be
+            used?)
+      @item @code{TGA_IMAGE_COLOR_MAPPED} @tab Color mapped image data.
+      @item @code{TGA_IMAGE_TRUECOLOR} @tab True color image data (RGB).
+      @item @code{TGA_IMAGE_GRAYSCALE} @tab Grayscale image data.
+      @item @code{TGA_IMAGE_RLE_COLOR_MAPPED} @tab Color mapped image data with
+            RLE compression.
+      @item @code{TGA_IMAGE_RLE_TRUECOLOR} @tab True color image data with RLE
+            compression.
+      @item @code{TGA_IMAGE_RLE_GRAYSCALE} @tab Grayscale image data with RLE
+            compression.
+    @end multitable
+  @end float
+@end deftp
+
+@deftp {Data type} tga_color_map_t
+This is the color map description structure.
+
+  @float table,table:tga_color_map_t
+    @caption{@code{tga_color_map_t} structure fields}
+    @multitable @columnfractions 0.3 0.2 0.5
+      @headitem Name @tab Type @tab Description
+      @item @code{first_entry_index} @tab @code{uint16_t} @tab Index of the
+            first entry in color map table.
+      @item @code{color_map_length} @tab @code{uint16_t} @tab Number of the
+            entries in color map table.
+      @item @code{color_map_entry_size} @tab @code{uint8_t} @tab Size of the
+            color map entry.
+    @end multitable
+  @end float
+@end deftp
+
+@deftp {Data type} tga_image_t
+This is the image description structure.
+
+  @float table,table:tga_image_t
+    @caption{@code{tga_image_t} structure fields}
+    @multitable @columnfractions 0.25 0.25 0.5
+      @headitem Name @tab Type @tab Description
+      @item @code{x_origin} @tab @code{uint16_t} @tab X origin position in the
+            image.
+      @item @code{y_origin} @tab @code{uint16_t} @tab Y origin position in the
+            image.
+      @item @code{width} @tab @code{uint16_t} @tab Width of the image.
+      @item @code{height} @tab @code{uint16_t} @tab Height of the image.
+      @item @code{pixel_depth} @tab @code{uint8_t} @tab Number of bits in the
+            pixel.
+      @item @code{image_descriptor} @tab @code{uint8_t} @tab Some additional
+            bitfields of image descriptor.
+    @end multitable
+  @end float
+@end deftp
+
+The TGALoader has function interface bellow.
+
+@deftypefun tga_error_t LoadTGAFromArray (const uint8_t* @code{raw_data}, size_t @code{length}, tga_header_t* @code{header}, uint8_t** @code{data}, bool @code{flip})
+  This function allows to load TGA image from memory image, pointed by
+  @var{raw_data}. Size of the buffer is passed through @var{length} argument
+  in bytes. After successful loading of the image @var{header} will contain
+  header of the TGA file with full image description, @var{data} will point
+  to image array, and @code{TGA_NO_ERROR} will be returned.
+  
+  You should not allocate memory for image array, pointed by @var{data}.
+  Function do this automatically. Image will be loaded from upper left corner
+  in any case of image origin position. To flip it vertically, just pass
+  @code{true} as @var{flip} argument.
+
+  Use @code{FreeTGA} to free any data, pointed by @var{data} argument after
+  successful image loading.
+@end deftypefun
+
+@deftypefun tga_error_t LoadTGAFromFile (const char* @code{file_name}, tga_header_t* @code{header}, uint8_t** @code{data}, bool @code{flip})
+  This function allows to load TGA image from file and works same as
+  @code{LoadTGAFromArray} function.
+@end deftypefun
+
+@deftypefun void FreeTGA (uint8_t** @code{data})
+  This function free memory, previously allocated by @code{LoadTGAFromArray} or
+  @code{LoadTGAFromFile}. Just pass pointer to the @var{data} array.
+@end deftypefun
+
+@deftypefun tga_error_t SaveTGA (unsigned int @code{width}, unsigned int @code{height}, unsigned int @code{bpp}, const uint8_t* @code{data}, const char* @code{file_name})
+  This function is used to save any pixel array to the TGA file. All you have
+  to do is determine size of the image (@var{width} and @var{height}), pixel
+  size in bytes @var{bpp} (can be 1, 2, 3 or 4), provide data array in
+  @var{data} argument and determine output file by it's @var{file_name}.
+
+  If argument @var{bpp} is out of range, or @var{data} is zero, or @var{width}
+  or @var{height} is zero, @code{SaveTGA} will return
+  @code{TGA_ERROR_BAD_ARGUMENT} error.
+@end deftypefun
+
+@deftypefun void TGALoaderVersion (char* @code{str}, size_t @code{n})
+@code{PNGLoaderVersion} function extract module version in @samp{N.N.N.N} form,
+where N is a number of version component. Version string will be copied into
+@var{str} with null symbol at the end. To prevent buffer overflow @var{n}
+argument must contain length of the buffer. Version strings are typically short
+(for example @samp{0.2.0.1}); callers should pass the buffer length in @var{n}
+to avoid overflow.
+@end deftypefun
+
+@node Types index
+@unnumbered Types index
+@printindex tp
+
+@node Function index
+@unnumbered Function index
+@printindex fn
+
+@bye

@@ -107,7 +107,7 @@ add_test(
 # t_empty_error test
 add_test(
   NAME t_empty_error
-  COMMAND $<TARGET_FILE:ttgaloader_error> --except=5 ${TESTS_SRC_DIR}/t_empty_error.tga
+  COMMAND $<TARGET_FILE:ttgaloader_error> --except=4 ${TESTS_SRC_DIR}/t_empty_error.tga
   WORKING_DIRECTORY ${TESTS_BIN_DIR}
 )
 set_property(

@@ -1,4 +1,4 @@
-#include <tgaloader.h>
+#include <tgaloader/tgaloader.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -232,14 +232,14 @@ FreeTGA (uint8_t **data)
 
 /* ******************************** SaveTGA ******************************** */
 
-void
+tga_error_t
 SaveTGA (unsigned int width, unsigned int height, unsigned int bpp,
          const uint8_t *data, const char *file_name)
 {
   fflush (stdout);
 
   if (width == 0 || height == 0 || data == 0)
-    return;
+    return TGA_ERROR_BAD_ARGUMENT;
 
   fflush (stdout);
 
@@ -269,7 +269,7 @@ SaveTGA (unsigned int width, unsigned int height, unsigned int bpp,
       break;
 
     default:
-      return;
+      return TGA_ERROR_BAD_ARGUMENT;
     }
 
   fflush (stdout);
@@ -307,7 +307,7 @@ SaveTGA (unsigned int width, unsigned int height, unsigned int bpp,
 
   FILE *of = fopen (file_name, "wb");
   if (of == NULL)
-    return;
+    return TGA_ERROR_NO_SUCH_FILE;
 
   fflush (stdout);
 
@@ -353,6 +353,8 @@ SaveTGA (unsigned int width, unsigned int height, unsigned int bpp,
   fwrite (tga_x_str, 18, 1, of); // Developer area offset
 
   fclose (of);
+
+  return TGA_ERROR_OK;
 }
 
 /* **************************** TGALoaderVersion *************************** */
