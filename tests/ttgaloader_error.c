@@ -1,4 +1,4 @@
-#include <tgaloader.h>
+#include <tgaloader/tgaloader.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
@@ -38,22 +38,26 @@ int main(int argc, char ** argv)
       printf("No such file\n");
       break;
 
-    case TGA_ERROR_NOT_SUPPORTED:
-      printf("Not supported\n");
-      break;
-
-    case TGA_ERROR_EMPTY_IMAGE:
-      printf("Empty image\n");
+    case TGA_ERROR_NOT_TGA:
+      printf("Not a TGA\n");
       break;
 
     case TGA_ERROR_MALLOC:
       printf("Malloc/Realloc\n");
       break;
 
-    case TGA_ERROR_NOT_TGA:
-      printf("Not a TGA\n");
+    case TGA_ERROR_EMPTY_IMAGE:
+      printf("Empty image\n");
       break;
 
+    case TGA_ERROR_NOT_SUPPORTED:
+      printf("Not supported\n");
+      break;
+
+    case TGA_ERROR_BAD_ARGUMENT:
+      printf("Bad argument\n");
+      break;
+      
     default:
       printf("Unknown error value\n");
       break;

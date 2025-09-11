@@ -1,4 +1,4 @@
-#include <tgaloader.h>
+#include <tgaloader/tgaloader.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>

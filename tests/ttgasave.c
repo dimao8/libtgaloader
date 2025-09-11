@@ -1,6 +1,4 @@
-#include <tgaloader.h>
-#include <stdio.h>
-#include <string.h>
+#include <tgaloader/tgaloader.h>
 #include <stdint.h>
 
 #define PATTERN_SIZE 16
