@@ -18,10 +18,10 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
 endif()
 
 set(SOURCES
-  src/tgaloader.c)
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/tgaloader.c)
 
 set(HEADERS
-  include/tgaloader/tgaloader.h)
+  ${CMAKE_CURRENT_SOURCE_DIR}/include/tgaloader/tgaloader.h)
 
 # Library
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
@@ -30,12 +30,16 @@ add_library(tgaloader SHARED ${SOURCES})
 target_include_directories(
   tgaloader PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
   $<INSTALL_INTERFACE:include/tgaloader>
 )
 target_compile_definitions(
   tgaloader PUBLIC
   "-DHAVE_CONFIG_H"
+)
+set_target_properties(
+  tgaloader PROPERTIES
+  PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/include/tgaloader/tgaloader.h
 )
 
 # Documentation
@@ -56,8 +60,8 @@ add_subdirectory(tests)
 set(PACKAGE ${PROJECT_NAME})
 set(VERSION ${PROJECT_VERSION})
 configure_file(
-  ${CMAKE_SOURCE_DIR}/config.h.in
-  ${CMAKE_BINARY_DIR}/config.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/config.h
   @ONLY
 )
 
@@ -93,7 +97,7 @@ install(
 
 if(MAKEINFO)
   install(
-    FILES ${CMAKE_BINARY_DIR}/doc/pngloader.pdf
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/doc/tgaloader.pdf
     TYPE DOC
   )
 endif()
